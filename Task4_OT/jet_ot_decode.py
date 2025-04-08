@@ -100,7 +100,7 @@ def ot_map_to_normal(source_latents, n_samples=1000):
     return torch.tensor(mapped, dtype=torch.float32)
 
 #Decode and Visualization
-def decode_samples(model, z_samples, title="Decoded", output_path="outputs_jet/decoded.png"):
+def decode_samples(model, z_samples, title="Decoded", output_path="Task4_OT/outputs_jet/decoded.png"):
     model.eval()
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     with torch.no_grad():
