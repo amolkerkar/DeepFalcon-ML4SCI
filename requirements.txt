@@ -1,0 +1,21 @@
+# Core packages
+torch>=1.13
+torchvision>=0.14
+numpy>=1.21
+matplotlib
+tqdm
+scikit-learn
+h5py
+
+# Task 1 & 4 (Autoencoders, VAE, OT)
+scikit-image
+POT==0.9.1  # For Optimal Transport
+
+# Task 2 (Graph Neural Networks)
+torch-geometric==2.4.0
+torch-scatter
+torch-sparse
+# Note: install torch-geometric dependencies to match your CUDA & PyTorch version
+
+# Optional for debugging/saving
+ipykernel
