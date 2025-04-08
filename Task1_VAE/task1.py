@@ -88,7 +88,7 @@ def vae_loss(x, x_hat, mu, logvar):
     return recon + kl
 
 #Saving Recon Images
-def save_reconstructions(model, loader, epoch, out_dir="outputs_debug"):
+def save_reconstructions(model, loader, epoch, out_dir="Task1_VAE\\outputs_debug"):
     os.makedirs(out_dir, exist_ok=True)
     model.eval()
     with torch.no_grad():
@@ -162,13 +162,13 @@ if __name__ == "__main__":
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print("Using device:", device)
 
-    dataset = InMemoryJetDataset(".\\data\\quark-gluon_data-set_n139306.hdf5", limit=5000) #setting according to my system limitations
+    dataset = InMemoryJetDataset("data\\quark-gluon_data-set_n139306.hdf5", limit=70000) #setting according to my system limitations
     loader = DataLoader(dataset, batch_size=32, shuffle=True, num_workers=2, pin_memory=True)
 
     vae = VAE(latent_dim=32).to(device)
 
-    train_vae(vae, loader, epochs=2, limit_batches=500)  #setting according to my system limitations
-    torch.save(vae.state_dict(), ".\\models\\vae_jet_trained.pth")
+    train_vae(vae, loader, epochs=15, limit_batches=1500)  #setting according to my system limitations
+    torch.save(vae.state_dict(), "models\\vae_jet_trained.pth")
     #model saved!
 
     vae.eval()
