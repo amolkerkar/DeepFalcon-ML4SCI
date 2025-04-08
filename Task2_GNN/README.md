@@ -44,9 +44,9 @@ EdgeConv helped a lot because it directly captures local geometry — which alig
 ### Observations
 
 - ROC curve showed that the model was learning — better than random by a clear margin.
-![GCN ROC](../assests/roc_1.png)
-![GAT ROC](../assests/roc_2.png)
-![EdgeConv ROC](../assests/roc_3.png)
+![GCN ROC](../assets/roc_1.png)
+![GAT ROC](../assets/roc_2.png)
+![EdgeConv ROC](../assets/roc_3.png)
 - Loss and accuracy stayed flat early on in GCN/GAT runs, but improved when feature expressiveness was increased.
 - Positional context and relative edge-based reasoning seemed key to improvements.
 
