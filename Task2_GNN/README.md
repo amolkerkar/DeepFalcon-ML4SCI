@@ -1,33 +1,73 @@
-# Task 2 – Jets as Graphs (GNN Classifier)
+## Performance Discussion – Task 2: Jet Classification with Graphs
 
-## What I did
+This task is classifying quark vs gluon jets using graph-based neural networks. The approach involved converting jet images to point clouds, building graphs, and training GNNs. Here's a breakdown of all the techniques I tried and what finally worked.
 
-This task was about representing jet events (originally in image format) as graphs and training a Graph Neural Network (GNN) to classify them as either **quark** or **gluon** jets.
+---
 
-To do this, I converted the calorimeter-style image data into a point cloud per event and then formed graphs using k-NN. These were then fed into a GCN for binary classification.
+### Final Result
+- **Best AUC**: `0.6537` using **EdgeConv** + **enhanced 14D node features**
+- This confirmed the model learnt some structure in the jet graphs that helps distinguish between quark and gluon jets.
 
+---
 
-## Dataset details
+###  What I Tried
 
-File: `quark-gluon_data-set_n139306.hdf5`
-- Shape of input: `(N, 125, 125, 3)` → 3 channels: `ECAL`, `HCAL`, and `Tracks`
-- Labels: 0 = quark, 1 = gluon
+#### 1. Baseline GCN
+- Started with a simple GCN:
+  - Node features: `(x, y, channel, intensity)` → 4D
+  - Edges: built using k-nearest neighbors (`k=10`)
+- **Result**: AUC hovered around `~0.592`
+- The model trained but hit a performance ceiling early.
 
-## Graph construction pipeline
+#### 2. Feature Engineering - made it 7D
+- To help the model learn better jet structure, I added:
+  - Radial distance from jet center
+  - Angle from jet center
+  - Node degree
+- Feature vector became: `x, y, c, intensity, r, angle, degree` → 7D
+- For EdgeConv, feature vectors became 14D (`[x_i || x_j - x_i]`)
+- This had a measurable impact when paired with a stronger model.
 
-Defined in `jett_graph_dataset.py`
-- For each event:
-  - I took non-zero pixels from each channel
-  - Stored the `(x, y)` location, channel index, and intensity as a 4D feature vector
-  - Used `sklearn`’s `NearestNeighbors` to build k-NN edges (k=10)
-  - Output is a `torch_geometric.data.Data` object with `x`, `edge_index`, and `y`
+#### 3. Model Comparisons
 
-If any graph didn’t have enough points (less than `k`), I skipped to the next one to avoid degenerate graphs.
+| Model       | Notes                             | AUC     |
+|-------------|-----------------------------------|---------|
+| `GCN`       | Simple, worked as baseline        | ~0.612  |
+| `GAT`       | Didn't help much, probably too noisy | ~0.61 |
+| `GraphSAGE` | Performed similar to GCN          | ~0.61   |
+| `EdgeConv`  | Best results with rich features   | **0.6537**  |
 
-## GNN model
+EdgeConv helped a lot because it directly captures local geometry — which aligns well with how energy is distributed across pixels in jets.
 
-File: `gnn_model.py`
+---
 
-Model used:
-```python
-GCNConv(4 → 64) → ReLU → GCNConv(64 → 64) → ReLU → global_mean_pool → Linear → logits (2 classes)
+### Observations
+
+- ROC curve showed that the model was learning — better than random by a clear margin.
+![GCN ROC](../assests/roc_1.png)
+![GAT ROC](../assests/roc_2.png)
+![EdgeConv ROC](../assests/roc_3.png)
+- Loss and accuracy stayed flat early on in GCN/GAT runs, but improved when feature expressiveness was increased.
+- Positional context and relative edge-based reasoning seemed key to improvements.
+
+---
+
+### 🧪 What Didn’t Work
+- Just adding more layers to GCN/GAT didn’t help much
+- Larger `k` (neighborhood size) beyond 10–15 degraded performance
+- GraphSAGE underwhelmed — not ideal for sparse point clouds here
+- Random guessing gives AUC ~0.5 — so we're better, but there's room to grow
+
+---
+
+### 🚀 Next Steps (if I continue this)
+
+- Try learning edge features (like Euclidean distance, angle diff)
+- Use hierarchical pooling or graph UNet
+- Pretrain on synthetic data or other jet types
+- Try JetNet-150 or point cloud datasets with physics-aware embeddings
+
+---
+
+This task taught me how crucial the **representation step** is before even thinking about what GNN architecture to use. When node features and edge construction matched the physical structure of jets better — performance followed.
+
