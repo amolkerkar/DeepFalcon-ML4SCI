@@ -25,12 +25,6 @@ Loss Function
 - Reconstruction: Mean Squared Error (MSE)
 - KL Divergence: Standard VAE KL term between latent distribution and standard normal
 
-## Output Visualization
-
-Every epoch, 5 random samples from the batch are reconstructed and saved as a side-by-side image grid:
-![Reconstruction Example](Task1_VAE/outputs_debug/recon_epoch_15.png)
-
-
 ## Evaluation Metrics
 
 At the end of training, I computed the following metrics on a mini-batch of 5 samples:
@@ -49,6 +43,11 @@ The VAE quickly learned to reconstruct jet images within a few epochs (sub-25 se
 Image pixel intensities are very low (~0.001), which is expected from pre-processed calorimeter images.
 The decoder does a decent job reproducing sparse energy deposits, despite such low magnitude data.
 
+## Output Visualization
+
+Every epoch, 5 random samples from the batch are reconstructed and saved as a side-by-side image grid:
+![Reconstruction Example](outputs_debug/recon_epoch_15.png)
+
 ## Training Log Snippet
 
 Epoch 2/15: 100%|██████████████████████████████████████████████████| 1500/1500 [00:22<00:00, 67.29it/s, loss=2.43]
@@ -58,7 +57,8 @@ Epoch 15/15: 100%|████████████████████�
 
 SSIM: mean=1.0000, std=0.0000
 PSNR: mean=106.32 dB, std=2.93 dB
-![alt text](assets/task1_op.png)
+![here](../assets/task1_op.png)
+
 
 ## Files:
 
